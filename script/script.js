@@ -3,6 +3,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const timerHours = document.querySelector('#timer-hours');
         const timerMinutes = document.querySelector('#timer-minutes');
         const timerSeconds = document.querySelector('#timer-seconds');
+        let idInterval;
 
         function getTimeRemaining() {
             const dateStop = new Date(deadline).getTime();
@@ -31,6 +32,7 @@ window.addEventListener('DOMContentLoaded', () => {
             const timer = getTimeRemaining();
 
             if (timer.timeRemaining <= 0) {
+                idInterval = clearInterval(idInterval);
                 return false;
             }
 
@@ -45,7 +47,7 @@ window.addEventListener('DOMContentLoaded', () => {
             const start = updateClock();
 
             if (start) {
-                setInterval(updateClock, 1000);
+                return setInterval(updateClock, 1000);
             } else {
                 timerHours.textContent = '00';
                 timerMinutes.textContent = '00';
@@ -53,7 +55,7 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        startTimer();
+        idInterval = startTimer();
     }
 
     countTimer('1 july 2020');
