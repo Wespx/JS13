@@ -340,25 +340,26 @@ window.addEventListener('DOMContentLoaded', () => {
         const calcDay = document.querySelector('.calc-day');
         const calcCount = document.querySelector('.calc-count');
         const totalValue = document.getElementById('total');
+        let requestId;
 
         const countAnimation = num => {
             totalValue.textContent = 0;
-            let requestId;
 
             const step = () => {
                 const currentValue = parseInt(totalValue.textContent);
-
-                totalValue.textContent = (num > 50000 && currentValue + 10000 < num) ? num - 10000 :
-                    (num > 10000 && currentValue + 5000 < num) ? currentValue + 1000 :
-                        (num > 1000 && currentValue + 500 < num) ? currentValue + 100 :
-                            (num > 100 && currentValue + 50 < num) ? currentValue + 10 :
-                                currentValue + 1;
 
                 if (currentValue < num) {
                     requestId = requestAnimationFrame(step);
                 } else {
                     cancelAnimationFrame(requestId);
                 }
+
+                totalValue.textContent = (num > 50000 && currentValue + 10000 < num) ? num - 10000 :
+                    (num > 10000 && currentValue + 5000 < num) ? currentValue + 1000 :
+                        (num > 1000 && currentValue + 500 < num) ? currentValue + 100 :
+                            (num > 100 && currentValue + 50 < num) ? currentValue + 10 :
+                                (num > currentValue) ? currentValue + 1 :
+                                    currentValue;
             };
 
             step();
@@ -384,13 +385,17 @@ window.addEventListener('DOMContentLoaded', () => {
             if (typeValue && squareValue) {
                 total = price * typeValue * squareValue * countValue * dayValue;
                 countAnimation(total);
+                console.log(total);
+            } else {
+                totalValue.textContent = 0;
             }
         };
 
-        calcBlock.addEventListener('change', event => {
-            const target = event.target;
+        calcBlock.addEventListener('change', e => {
+            const target = e.target;
 
             if (target.matches('select') || target.matches('input')) {
+                cancelAnimationFrame(requestId);
                 countSum();
             }
         });
