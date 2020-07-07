@@ -58,7 +58,7 @@ window.addEventListener('DOMContentLoaded', () => {
         idInterval = startTimer();
     };
 
-    countTimer('5 july 2020 7:35');
+    countTimer('15 july 2020 7:35');
 
     //меню
 
@@ -307,4 +307,100 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     slider();
+
+    //смена фотографии по наведению курсора
+
+    const eventListeners = () => {
+        const photos = document.querySelectorAll('.command__photo');
+        const switchPhoto = photo => {
+            const src = photo.getAttribute('src');
+            const dataImg = photo.getAttribute('data-img');
+
+            photo.setAttribute('src', dataImg);
+            photo.setAttribute('data-img', src);
+        };
+
+        photos.forEach(photo => {
+            photo.addEventListener('mouseenter', switchPhoto.bind(this, photo));
+        });
+
+        photos.forEach(photo => {
+            photo.addEventListener('mouseleave', switchPhoto.bind(this, photo));
+        });
+    };
+
+    eventListeners();
+
+    //калькулятор
+
+    const calc = (price = 100) => {
+        const calcBlock = document.querySelector('.calc-block');
+        const calcType = document.querySelector('.calc-type');
+        const calcSquare = document.querySelector('.calc-square');
+        const calcDay = document.querySelector('.calc-day');
+        const calcCount = document.querySelector('.calc-count');
+        const totalValue = document.getElementById('total');
+
+        const countAnimation = num => {
+            totalValue.textContent = 0;
+            let requestId;
+
+            const step = () => {
+                const currentValue = parseInt(totalValue.textContent);
+
+                totalValue.textContent = (num > 50000 && currentValue + 10000 < num) ? num - 10000 :
+                    (num > 10000 && currentValue + 5000 < num) ? currentValue + 1000 :
+                        (num > 1000 && currentValue + 500 < num) ? currentValue + 100 :
+                            (num > 100 && currentValue + 50 < num) ? currentValue + 10 :
+                                currentValue + 1;
+
+                if (currentValue < num) {
+                    requestId = requestAnimationFrame(step);
+                } else {
+                    cancelAnimationFrame(requestId);
+                }
+            };
+
+            step();
+        };
+
+        const countSum = () => {
+            let total = 0;
+            let countValue = 1;
+            let dayValue = 1;
+            const typeValue = calcType.options[calcType.selectedIndex].value;
+            const squareValue = +calcSquare.value;
+
+            if (calcCount.value > 1) {
+                countValue += (calcCount.value - 1) / 10;
+            }
+
+            if (calcDay.value && calcDay.value < 5) {
+                dayValue *= 2;
+            } else if (calcDay.value && calcDay.value < 10) {
+                dayValue *= 1.5;
+            }
+
+            if (typeValue && squareValue) {
+                total = price * typeValue * squareValue * countValue * dayValue;
+                countAnimation(total);
+            }
+        };
+
+        calcBlock.addEventListener('change', event => {
+            const target = event.target;
+
+            if (target.matches('select') || target.matches('input')) {
+                countSum();
+            }
+        });
+
+        calcBlock.addEventListener('input', e => {
+            if (e.target.matches('input')) {
+                e.target.value = e.target.value.replace(/\D/, '');
+            }
+        });
+    };
+
+    calc(100);
 });
