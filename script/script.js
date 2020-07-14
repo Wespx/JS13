@@ -439,24 +439,26 @@ window.addEventListener('DOMContentLoaded', () => {
 
             statusMessage.style.cssText = 'font-size: 2rem;';
 
-            const postData = (body, outputData, errorData) => {
-                const request = new XMLHttpRequest();
-                request.addEventListener('readystatechange', () => {
-                    if (request.readyState !== 4) {
-                        return;
-                    }
+            const postData = body => {
+                return new Promise((resolve, reject) => {
+                    const request = new XMLHttpRequest();
+                    request.addEventListener('readystatechange', () => {
+                        if (request.readyState !== 4) {
+                            return;
+                        }
 
-                    if (request.status === 200) {
-                        outputData();
-                        form.reset();
-                    } else {
-                        errorData(request.status);
-                    }
+                        if (request.status === 200) {
+                            resolve(statusMessage.textContent = successMsg);
+                            form.reset();
+                        } else {
+                            reject(statusMessage.textContent = errorMsg);
+                        }
+                    });
+
+                    request.open('POST', './server.php');
+                    request.setRequestHeader('Content-Type', 'application/JSON');
+                    request.send(JSON.stringify(body));
                 });
-
-                request.open('POST', './server.php');
-                request.setRequestHeader('Content-Type', 'application/JSON');
-                request.send(JSON.stringify(body));
             };
 
             form.addEventListener('submit', event => {
@@ -473,14 +475,9 @@ window.addEventListener('DOMContentLoaded', () => {
                     body[val[0]] = val[1];
                 }
 
-                postData(body,
-                    () => {
-                        statusMessage.textContent = successMsg;
-                    },
-                    error => {
-                        statusMessage.textContent = errorMsg;
-                        console.error(error);
-                    });
+                postData(body)
+                    .then()
+                    .catch(error => console.error(error));
             });
         };
 
