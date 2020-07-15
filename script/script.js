@@ -448,10 +448,9 @@ window.addEventListener('DOMContentLoaded', () => {
                         }
 
                         if (request.status === 200) {
-                            resolve(statusMessage.textContent = successMsg);
-                            form.reset();
+                            resolve(successMsg);
                         } else {
-                            reject(statusMessage.textContent = errorMsg);
+                            reject(`Ошибка ${request.status}: ${request.statusText}`);
                         }
                     });
 
@@ -476,8 +475,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
 
                 postData(body)
-                    .then()
-                    .catch(error => console.error(error));
+                    .then(response => response)
+                    .then(response => statusMessage.textContent = response)
+                    .catch(error => {
+                        console.error(error);
+                        statusMessage.textContent = errorMsg;
+                    });
             });
         };
 
