@@ -440,23 +440,12 @@ window.addEventListener('DOMContentLoaded', () => {
             statusMessage.style.cssText = 'font-size: 2rem;';
 
             const postData = body => {
-                return new Promise((resolve, reject) => {
-                    const request = new XMLHttpRequest();
-                    request.addEventListener('readystatechange', () => {
-                        if (request.readyState !== 4) {
-                            return;
-                        }
-
-                        if (request.status === 200) {
-                            resolve(successMsg);
-                        } else {
-                            reject(`Ошибка ${request.status}: ${request.statusText}`);
-                        }
-                    });
-
-                    request.open('POST', './server.php');
-                    request.setRequestHeader('Content-Type', 'application/JSON');
-                    request.send(JSON.stringify(body));
+                return fetch('./server.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/JSON'
+                    },
+                    body: JSON.stringify(body)
                 });
             };
 
@@ -475,8 +464,16 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
 
                 postData(body)
-                    .then(response => response)
-                    .then(response => statusMessage.textContent = response)
+                    .then(response => {
+                        if (response.status !== 200) {
+                            throw new Error('Status: not 200');
+                        } else {
+                            return true;
+                        }
+                    })
+                    .then(responseOK => {
+                        if (responseOK) statusMessage.textContent = successMsg;
+                    })
                     .catch(error => {
                         console.error(error);
                         statusMessage.textContent = errorMsg;
