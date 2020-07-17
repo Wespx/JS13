@@ -58,7 +58,7 @@ window.addEventListener('DOMContentLoaded', () => {
         idInterval = startTimer();
     };
 
-    countTimer('15 july 2020 7:35');
+    countTimer('30 july 2020 7:35');
 
     //меню
 
@@ -468,12 +468,10 @@ window.addEventListener('DOMContentLoaded', () => {
                         if (response.status !== 200) {
                             throw new Error('Status: not 200');
                         } else {
-                            return true;
+                            return response;
                         }
                     })
-                    .then(responseOK => {
-                        if (responseOK) statusMessage.textContent = successMsg;
-                    })
+                    .then(response => statusMessage.textContent = successMsg)
                     .catch(error => {
                         console.error(error);
                         statusMessage.textContent = errorMsg;
