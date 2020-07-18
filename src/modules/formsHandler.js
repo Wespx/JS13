@@ -38,6 +38,15 @@ const formsHandler = () => {
 
         form.addEventListener('submit', event => {
             event.preventDefault();
+            const phone = form.querySelector('.form-phone');
+
+            if (phone.value.length !== 18) {
+                phone.style.border = '2px solid red';
+                setTimeout(() => {
+                    phone.style.border = '';
+                }, 600);
+                return;
+            }
 
             if (form.id === 'form3') statusMessage.style.color = '#fff';
             form.appendChild(statusMessage);
@@ -58,10 +67,15 @@ const formsHandler = () => {
                         return response;
                     }
                 })
-                .then(response => statusMessage.textContent = successMsg)
+                .then(response => {
+                    statusMessage.textContent = successMsg;
+                    form.reset();
+                    setTimeout(() => statusMessage.textContent = '', 1500);
+                })
                 .catch(error => {
                     console.error(error);
                     statusMessage.textContent = errorMsg;
+                    setTimeout(() => statusMessage.textContent = '', 1500);
                 });
         });
     };
@@ -85,7 +99,8 @@ const formsHandler = () => {
                     newValue = newValue.slice(0, i);
                 }
 
-                let reg = template.substr(0, target.value.length).replace(/_+/g, a => '\\d{1,' + a.length + '}').replace(/[+()]/g, '\\$&');
+                let reg = template.substr(0, target.value.length)
+                    .replace(/_+/g, a => '\\d{1,' + a.length + '}').replace(/[+()]/g, '\\$&');
                 reg = new RegExp('^' + reg + '$');
 
                 if (!reg.test(target.value) || target.value.length < 5 || keyCode > 47 && keyCode < 58) {
@@ -134,8 +149,29 @@ const formsHandler = () => {
             });
         };
 
+        const validEmail = selector => {
+            const elems = document.querySelectorAll(selector);
+
+            elems.forEach(elem => {
+                elem.addEventListener('input', e => {
+                    const target = e.target;
+                    const regExp = /[^A-Za-z0-9-_.@]+/g;
+                    target.value = target.value.replace(regExp, '');
+
+                    if (regExp.test(e.data) && !!e.data) {
+                        target.style.border = 'solid red';
+                    } else {
+                        target.style.border = '';
+                    }
+                });
+
+                elem.setAttribute('autocomplete', 'off');
+            });
+        };
+
         maskPhone('.form-phone');
         validText('[placeholder="Ваше имя"], [placeholder="Ваше сообщение"]');
+        validEmail('[placeholder="E-mail"], [placeholder="Ваш E-mail"]');
     };
 
     sendForm(form1);

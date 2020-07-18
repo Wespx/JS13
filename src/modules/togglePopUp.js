@@ -2,6 +2,7 @@ const togglePopUp = () => {
     const popUp = document.querySelector('.popup');
     const popUpBtn = document.querySelectorAll('.popup-btn');
     const popUpContent = document.querySelector('.popup-content');
+    const form = document.getElementById('form3');
     const startPos = '100%';
     const endPos = '10%';
 
@@ -17,6 +18,7 @@ const togglePopUp = () => {
     popUpBtn.forEach(elem => {
         elem.addEventListener('click', () => {
             popUp.style.display = 'block';
+            form.reset();
             if (window.innerWidth > 768) {
                 popUpContent.style.top = startPos;
                 renderPopUp();

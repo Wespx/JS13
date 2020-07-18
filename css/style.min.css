@@ -135,7 +135,7 @@ body p {
 }
 
 body .close-btn {
-    position: fixed;
+    position: absolute;
     top: 30px;
     left: 30px;
     font-size: 3rem;
